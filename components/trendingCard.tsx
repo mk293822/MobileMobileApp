@@ -1,12 +1,14 @@
 import { View, Text, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import { TrendingCardInterface } from '@/interfaces/interfaces';
-import { Link } from 'expo-router';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import { Link } from "expo-router";
 import MaskedView from "@react-native-masked-view/masked-view";
 
-const TrendingCard = ({movie: {movie_id, title, poster_url, count, searchTerm}, index}: TrendingCardInterface) => {
-  return (
+const TrendingCard = ({
+	movie: { movie_id, title, poster_url },
+	index,
+}: TrendingCardInterface) => {
+	return (
 		<Link href={`/movies/${movie_id}`} asChild>
 			<TouchableOpacity className="w-32 relative pl-2">
 				<Image
@@ -32,12 +34,15 @@ const TrendingCard = ({movie: {movie_id, title, poster_url, count, searchTerm}, 
 						/>
 					</MaskedView>
 				</View>
-				<Text className="text-sm font-bold text-light-200 mt-2" numberOfLines={1}>
+				<Text
+					className="text-sm font-bold text-light-200 mt-2"
+					numberOfLines={1}
+				>
 					{title}
 				</Text>
 			</TouchableOpacity>
 		</Link>
 	);
-}
+};
 
 export default TrendingCard;

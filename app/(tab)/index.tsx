@@ -1,3 +1,4 @@
+import React from "react";
 import MovieCard from "@/components/movieCard";
 import SearchBar from "@/components/searchBar";
 import TrendingCard from "@/components/trendingCard";

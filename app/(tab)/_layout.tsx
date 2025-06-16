@@ -1,33 +1,38 @@
-import React from 'react'
-import { Tabs } from 'expo-router'
-import { Text, View } from 'react-native';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import React from "react";
+import { Tabs } from "expo-router";
+import { Text, View } from "react-native";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 interface Page {
-    name?: string;
-    title: string;
-    icon: keyof typeof AntDesign.glyphMap;
+	name?: string;
+	title: string;
+	icon: keyof typeof AntDesign.glyphMap;
 }
 
 const pages: Page[] = [
-    {name: 'index', title: 'Home', icon: "home"},
-    {name: 'search', title: 'Search', icon: "search1"},
-    {name: 'saved', title: 'Saved', icon: "save"},
-    {name: 'profile', title: 'Profile', icon: "user"},
+	{ name: "index", title: "Home", icon: "home" },
+	{ name: "search", title: "Search", icon: "search1" },
+	{ name: "saved", title: "Saved", icon: "save" },
+	{ name: "profile", title: "Profile", icon: "user" },
 ];
 
-
-const TabIcon = ({title, focused, icon}: Page & {focused: boolean}) => {
-    return (
-        <View className={`${focused ? 'bg-purple-400 flex-1 min-w-28 gap-1 overflow-hidden flex flex-row' : 'min-w-16'} mt-4 min-h-[3.7rem] justify-center items-center rounded-full`}>
-             <AntDesign name={icon} size={24} color={'white'} />
-           {focused &&  <Text className={`text-base font-bold mt-0.5 text-gray-200`}>{title}</Text>}
-        </View>
-    )
-}
+const TabIcon = ({ title, focused, icon }: Page & { focused: boolean }) => {
+	return (
+		<View
+			className={`${focused ? "bg-purple-400 flex-1 min-w-28 gap-1 overflow-hidden flex flex-row" : "min-w-16"} mt-4 min-h-[3.7rem] justify-center items-center rounded-full`}
+		>
+			<AntDesign name={icon} size={24} color={"white"} />
+			{focused && (
+				<Text className={`text-base font-bold mt-0.5 text-gray-200`}>
+					{title}
+				</Text>
+			)}
+		</View>
+	);
+};
 
 const _layout = () => {
-  return (
+	return (
 		<Tabs
 			screenOptions={{
 				headerShown: false,
@@ -53,7 +58,7 @@ const _layout = () => {
 			}}
 		>
 			{pages.map((page) => (
-                <Tabs.Screen
+				<Tabs.Screen
 					key={page.name}
 					name={page.name}
 					options={{
@@ -66,6 +71,6 @@ const _layout = () => {
 			))}
 		</Tabs>
 	);
-}
+};
 
-export default _layout
+export default _layout;
