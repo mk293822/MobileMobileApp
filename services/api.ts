@@ -1,51 +1,100 @@
-import { MovieDetails } from "@/interfaces/interfaces";
-import { Movie } from '../interfaces/interfaces';
+import {
+	ImageTypeProps,
+	MovieDetails,
+	MovieOptions,
+	VideoItem,
+} from "@/interfaces/interfaces";
 
-export const TMDB_Config = {
+export const { BASE_URL, API_KEY, headers } = {
 	BASE_URL: "https://api.themoviedb.org/3",
 	API_KEY: process.env.EXPO_PUBLIC_MOVIE_API_KEY,
 	headers: {
-        Authorization: `Bearer ${process.env.EXPO_PUBLIC_MOVIE_API_KEY}`,
-        accept: 'application/json'
+		Authorization: `Bearer ${process.env.EXPO_PUBLIC_MOVIE_API_KEY}`,
+		accept: "application/json",
 	},
 };
 
+export const fetchImages = async (movieId: number): Promise<ImageTypeProps> => {
+	try {
+		const response = await fetch(`${BASE_URL}/movie/${movieId}/images`, {
+			method: "GET",
+			headers: headers,
+		});
 
-export const fetchMovie = async ({ query }: { query: string }) => {
-    const endpoint = query
-			? `${TMDB_Config.BASE_URL}/search/movie?query=${encodeURIComponent(
-					query
-			  )}`
-			: `${TMDB_Config.BASE_URL}/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`;
+		if (!response.ok) throw new Error("Error fection Movies");
 
-    const response = await fetch(endpoint, {
-        method: "GET",
-        headers: TMDB_Config.headers
-    });
+		return await response.json();
+	} catch (error) {
+		console.log(error);
+		throw error;
+	}
+};
 
-    if (!response.ok) {
-        throw new Error(`Error fetching movie: ${response.statusText}`);
-    }
+export const fetchVideo = async (movieId: number): Promise<VideoItem[]> => {
+	try {
+		const response = await fetch(`${BASE_URL}/movie/${movieId}/videos`, {
+			method: "GET",
+			headers: headers,
+		});
 
-    const data = await response.json();
+		if (!response.ok) throw new Error("Error fection Movies");
 
-    return data.results;
-}
+		const data = await response.json();
 
-export const fetchMovieDetails = async (movieId: string): Promise<Movie & MovieDetails> => {
-    try {
-        const response = await fetch(`${TMDB_Config.BASE_URL}/movie/${movieId}?api_key=${TMDB_Config.API_KEY}`, {
-            method: "GET",
-            headers: TMDB_Config.headers
-        });
+		return data.results;
+	} catch (error) {
+		console.log(error);
+		throw error;
+	}
+};
 
-        if (!response.ok) throw new Error("Failed to fetch movie details");
+export const fetchMovie = async (options?: MovieOptions) => {
+	const {
+		query = "",
+		include_adult = false,
+		include_video = false,
+		sort_by = "popularity.desc",
+		page = 1,
+		language = "en-US",
+	} = options || {};
 
-        const data = await response.json();
+	const endpoint = query.trim()
+		? `${BASE_URL}/search/movie?query=${encodeURIComponent(query)}&include_adult=${include_adult}&language=${language}&page=${page}`
+		: `${BASE_URL}/discover/movie?include_adult=${include_adult}&include_video=${include_video}&language=${language}&page=${page}&sort_by=${sort_by}`;
 
-        return data;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-}
+	const response = await fetch(endpoint, {
+		method: "GET",
+		headers: headers,
+	});
+
+	if (!response.ok) {
+		throw new Error(`Error fetching movie: ${response.statusText}`);
+	}
+
+	const data = await response.json();
+
+	return data.results as MovieDetails[];
+};
+
+export const fetchMovieDetails = async (
+	movieId: string
+): Promise<MovieDetails> => {
+	try {
+		const response = await fetch(
+			`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}`,
+			{
+				method: "GET",
+				headers: headers,
+			}
+		);
+
+		if (!response.ok) throw new Error("Failed to fetch movie details");
+
+		const data = await response.json();
+
+		return data;
+	} catch (error) {
+		console.log(error);
+		throw error;
+	}
+};

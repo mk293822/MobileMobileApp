@@ -1,33 +1,33 @@
-import { View, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
-import React from 'react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import useFetch from '@/hooks/useFetch';
-import { fetchMovieDetails } from '@/services/api';
-import AntDesign from '@expo/vector-icons/AntDesign';
-
-interface MovieInfoProps {
-  label: string;
-  value?: string | number | null;
-}
-
-const MovieInfo = ({ label, value }: MovieInfoProps) => {
-  return <View className='flex-col items-start justify-center mt-5'>
-    <Text className='text-light-200 font-normal text-sm'>
-      {label}
-    </Text>
-    <Text className='text-light-100 font-bold text-sm mt-2'>{value || 'N/A'}</Text>
-  </View>
-}
+import {
+	View,
+	Text,
+	TouchableOpacity,
+	ActivityIndicator,
+	StatusBar,
+} from "react-native";
+import React, { useCallback, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import useFetch from "@/hooks/useFetch";
+import { fetchMovieDetails, fetchVideo } from "@/services/api";
+import MovieDetailsBody from "@/components/movieDetailsBody";
+import VideoTrailer from "@/components/videoTrailer";
 
 const MovieDetails = () => {
+	const { id } = useLocalSearchParams();
+	const router = useRouter();
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { id } = useLocalSearchParams();
-  const router = useRouter();
+	const fetchMovie = useCallback(() => fetchMovieDetails(id as string), [id]);
 
-  const { data: movie, loading, error } = useFetch(() => fetchMovieDetails(id as string), true);
+	const { data: movie, loading, error } = useFetch(fetchMovie, true);
 
-  return (
-		<View className="bg-primary flex-1">
+	const fetchVid = useCallback(() => fetchVideo(Number(id)), [id]);
+
+	const { data: videos } = useFetch(fetchVid, true);
+
+	return (
+		<View className="bg-primary flex-1 justify-center items-center">
+			<StatusBar hidden={true} />
 			{loading ? (
 				<ActivityIndicator
 					size={"large"}
@@ -35,97 +35,46 @@ const MovieDetails = () => {
 					className="mt-10 self-center"
 				/>
 			) : error ? (
-				<Text className='text-xl font-bold text-red-500d'>{error?.message}</Text>
+				<Text className="text-xl font-bold text-red-500d">
+					{error?.message}
+				</Text>
 			) : (
-				<>
-					<ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
-						<View>
-							<Image
-								source={{
-									uri: `https://image.tmdb.org/t/p/w500${movie?.poster_path}`,
-								}}
-								className="w-full h-[550px]"
-								resizeMode="stretch"
-							/>
+				movie && (
+					<View className="relative">
+						<MovieDetailsBody movie={movie} />
+						<View className="absolute bottom-5 mx-4 gap-2 flex flex-row items-center justify-center z-50">
+							<TouchableOpacity
+								className="bg-accent rounded-lg py-3.5 gap-2 w-[50%]"
+								onPress={router.back}
+							>
+								<Text className="text-white text-center font-semibold text-base ">
+									Go Back
+								</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								className={`${videos?.[0] ? "bg-red-500 " : "bg-red-500/50 "} rounded-lg py-3.5 w-[50%]`}
+								onPress={() => setIsModalOpen(true)}
+								disabled={!videos?.[0]}
+							>
+								<Text
+									className={`${videos?.[0] ? "text-white " : "text-white/50 "} text-center font-semibold text-base`}
+								>
+									{videos?.[0] ? "Watch Trailer" : "No Trailer"}
+								</Text>
+							</TouchableOpacity>
 						</View>
-						<View className="flex-col items-start justify-center mt-5 px-5">
-							<Text className="text-white font-bold text-xl">
-								{movie?.title}
-							</Text>
-							<View className="flex-row items-center gap-x-1 mt-2">
-								<Text className="text-light-200 text-sm">
-									{movie?.release_date?.split("-")[0]}
-								</Text>
-								<Text className="text-light-200 text-sm">
-									{movie?.runtime}m
-								</Text>
-							</View>
-
-							<View className="flex-row items-center bg-dark-100 px-2 py-1 rounded-md gap-x-1 mt-2">
-								<AntDesign name="star" size={12} color={"yellow"} />
-								<Text className="text-white font-bold text-sm">
-									{Math.round(movie?.vote_average ?? 0)} / 10
-								</Text>
-								<Text className="text-light-200 text-sm">
-									({movie?.vote_count} votes)
-								</Text>
-							</View>
-
-							<MovieInfo label="Overview" value={movie?.overview} />
-							<MovieInfo
-								label="Genres"
-								value={
-									movie?.genres && movie.genres.length > 0
-										? movie.genres.map((g) => g.name).join(" - ")
-										: "N/A"
-								}
-							/>
-							<View className="flex flex-row justify-between w-1/2">
-								<MovieInfo
-									label="Budget"
-									value={
-										movie?.budget
-											? `$${movie?.budget / 1_000_000} millions`
-											: "N/A"
-									}
-								/>
-								<MovieInfo
-									label="Revenue"
-									value={
-										movie?.revenue
-											? `$${Math.round(movie?.revenue / 1_000_000)}`
-											: "N/A"
-									}
-								/>
-							</View>
-							<MovieInfo
-								label="Genres"
-								value={
-									movie?.production_companies &&
-									movie.production_companies.length > 0
-										? movie.production_companies.map((g) => g.name).join(" - ")
-										: "N/A"
-								}
-							/>
-						</View>
-					</ScrollView>
-
-					<TouchableOpacity
-						className="absolute bottom-5 gap-2 left-0 right-0 mx-5 bg-accent rounded-lg py-3.5 flex flex-row items-center justify-center z-50"
-						onPress={router.back}
-					>
-						<AntDesign
-							size={22}
-							name="arrowleft"
-							className="mt-0.5"
-							color={"white"}
-						/>
-						<Text className="text-white font-semibold text-base">Go Back</Text>
-					</TouchableOpacity>
-				</>
+					</View>
+				)
+			)}
+			{movie && videos?.[0] && (
+				<VideoTrailer
+					visible={isModalOpen}
+					video={videos[0]}
+					onClose={() => setIsModalOpen(false)}
+				/>
 			)}
 		</View>
 	);
-}
+};
 
-export default MovieDetails
+export default MovieDetails;

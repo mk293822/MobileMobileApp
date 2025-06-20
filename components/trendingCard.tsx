@@ -21,7 +21,7 @@ const TrendingCard = ({
 					className="w-32 h-48 rounded-lg"
 				/>
 
-				<View className="absolute bottom-9 -left-3.5 px-2 py-1 rounded-full">
+				<View className="absolute bottom-0 -left-4 px-2 py-1 rounded-full">
 					<MaskedView
 						maskElement={
 							<Text className="font-bold text-white text-6xl">{index + 1}</Text>
@@ -29,7 +29,7 @@ const TrendingCard = ({
 					>
 						<Image
 							source={require("../assets/images/icon.png")}
-							className="size-14"
+							className="size-20"
 							resizeMode="cover"
 						/>
 					</MaskedView>

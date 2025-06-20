@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.minkhant.MovieApp"
     },
     "web": {
       "bundler": "metro",
@@ -29,27 +30,33 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-			"expo-router",
-			[
-				"expo-splash-screen",
-				{
-					"image": "./assets/images/splash-icon.png",
-					"imageWidth": 200,
-					"resizeMode": "contain",
-					"backgroundColor": "#ffffff"
-				}
-			],
-			[
-				"expo-font",
-				{
-					"fonts": [
-						"node_modules/@expo-google-fonts/poppins/300Light/Poppins_300Light.ttf"
-					]
-				}
-			]
-		],
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo-google-fonts/poppins/300Light/Poppins_300Light.ttf"
+          ]
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1ba212fa-fb1c-45fb-828a-46a6e36f5fc4"
+      }
     }
   }
 }

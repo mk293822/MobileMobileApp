@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs } from "expo-router";
 import { Text, View } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 interface Page {
 	name?: string;
@@ -33,43 +34,49 @@ const TabIcon = ({ title, focused, icon }: Page & { focused: boolean }) => {
 
 const _layout = () => {
 	return (
-		<Tabs
-			screenOptions={{
-				headerShown: false,
-				tabBarShowLabel: false,
-				tabBarItemStyle: {
-					justifyContent: "center",
-					alignItems: "center",
-					width: "100%",
-					height: "100%",
-				},
-				tabBarStyle: {
-					borderRadius: 50,
-					marginHorizontal: 20,
-					marginBottom: 36,
-					height: 52,
-					position: "absolute",
-					overflow: "hidden",
-					borderWidth: 1,
-					paddingHorizontal: 5,
-					backgroundColor: "#030530",
-					borderColor: "1f2937",
-				},
-			}}
-		>
-			{pages.map((page) => (
-				<Tabs.Screen
-					key={page.name}
-					name={page.name}
-					options={{
-						title: page.title,
-						tabBarIcon: ({ focused }) => (
-							<TabIcon title={page.title} icon={page.icon} focused={focused} />
-						),
-					}}
-				/>
-			))}
-		</Tabs>
+		<SafeAreaProvider>
+			<Tabs
+				screenOptions={{
+					headerShown: false,
+					tabBarShowLabel: false,
+					tabBarItemStyle: {
+						justifyContent: "center",
+						alignItems: "center",
+						width: "100%",
+						height: "100%",
+					},
+					tabBarStyle: {
+						borderRadius: 50,
+						marginHorizontal: 20,
+						marginBottom: 30,
+						height: 52,
+						position: "absolute",
+						overflow: "hidden",
+						borderWidth: 1,
+						paddingHorizontal: 5,
+						backgroundColor: "#030530",
+						borderColor: "1f2937",
+					},
+				}}
+			>
+				{pages.map((page) => (
+					<Tabs.Screen
+						key={page.name}
+						name={page.name}
+						options={{
+							title: page.title,
+							tabBarIcon: ({ focused }) => (
+								<TabIcon
+									title={page.title}
+									icon={page.icon}
+									focused={focused}
+								/>
+							),
+						}}
+					/>
+				))}
+			</Tabs>
+		</SafeAreaProvider>
 	);
 };
 

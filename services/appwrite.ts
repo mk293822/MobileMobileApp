@@ -1,4 +1,4 @@
-import { Movie, TrendingMovie } from "@/interfaces/interfaces";
+import { TrendingMovie } from "@/interfaces/interfaces";
 import { Client, Databases, ID, Query } from "react-native-appwrite";
 
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
@@ -11,10 +11,18 @@ const client = new Client()
 
 const database = new Databases(client);
 
-export const updateSearchCount = async (query: string, movie: Movie) => {
+export const updateTrendingMovies = async ({
+	title,
+	id,
+	poster_path,
+}: {
+	title: string;
+	id: number;
+	poster_path: string | null;
+}) => {
 	try {
 		const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
-			Query.equal("searchTerm", query),
+			Query.equal("movie_id", id),
 		]);
 		if (result.documents.length > 0) {
 			const existingMovie = result.documents[0];
@@ -25,18 +33,14 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
 				existingMovie.$id,
 				{
 					count: existingMovie.count + 1,
-					poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
-					movie_id: movie.id,
-					title: movie.title,
 				}
 			);
 		} else {
 			await database.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
-				searchTerm: query,
-				movie_id: movie.id,
+				movie_id: id,
 				count: 1,
-				poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
-				title: movie.title,
+				poster_url: `https://image.tmdb.org/t/p/w500${poster_path}`,
+				title: title,
 			});
 		}
 	} catch (error) {
